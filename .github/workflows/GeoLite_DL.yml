@@ -13,18 +13,24 @@ jobs:
     steps:
     - name: Download GeoLite Database
       run: |
-        # curl -LOJ "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-ASN&license_key=${{ secrets.LICENSE_KEY }}&suffix=tar.gz"
-        # curl -LOJ "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City&license_key=${{ secrets.LICENSE_KEY }}&suffix=tar.gz"
-        # curl -LOJ "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-Country&license_key=${{ secrets.LICENSE_KEY }}&suffix=tar.gz"
+        # 下载IP数据库
+        curl -LOJ "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-ASN&license_key=${{ secrets.LICENSE_KEY }}&suffix=tar.gz"
+        curl -LOJ "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City&license_key=${{ secrets.LICENSE_KEY }}&suffix=tar.gz"
+        curl -LOJ "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-Country&license_key=${{ secrets.LICENSE_KEY }}&suffix=tar.gz"
 
-        curl -LOJ https://github.com/gek64/GeoLite-Database/releases/download/test/GeoLite2-City_20211018.tar.gz
-        curl -LOJ https://github.com/gek64/GeoLite-Database/releases/download/test/GeoLite2-City_20211019.tar.gz
+        # 解压数据库
+        for i in "GeoLite*"; do
+          tar -xvf $i
+        done
 
-        tar -xvf *.tar.gz
+        # 删除数据库文件
+        rm *.tar.gz
 
+        # 移动数据库文件到指定文件夹
         mkdir -p database
         mv GeoLite*/*.mmdb database
 
+        # 时间戳
         echo "Time=$(date +"%Y.%m.%d")" >> $GITHUB_ENV
 
     - name: Remove old Releases
