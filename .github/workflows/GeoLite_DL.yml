@@ -11,39 +11,35 @@ jobs:
     timeout-minutes: 5
 
     steps:
-    - name: Download GeoLite Database
-      run: |
-        # 下载IP数据库
-        curl -LOJ "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-ASN&license_key=${{ secrets.LICENSE_KEY }}&suffix=tar.gz"
-        curl -LOJ "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City&license_key=${{ secrets.LICENSE_KEY }}&suffix=tar.gz"
-        curl -LOJ "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-Country&license_key=${{ secrets.LICENSE_KEY }}&suffix=tar.gz"
+      - name: Download GeoLite Database
+        run: |
+          # 下载IP数据库
+          curl -LOJ "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-ASN&license_key=${{ secrets.LICENSE_KEY }}&suffix=tar.gz"
+          curl -LOJ "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City&license_key=${{ secrets.LICENSE_KEY }}&suffix=tar.gz"
+          curl -LOJ "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-Country&license_key=${{ secrets.LICENSE_KEY }}&suffix=tar.gz"
+          # 解压数据库
+          for i in *.tar.gz; do
+            tar -xvf "$i"
+          done
+          # 删除数据库文件
+          rm *.tar.gz
+          # 移动数据库文件到指定文件夹
+          mkdir -p database
+          mv GeoLite*/*.mmdb database
+          # 时间戳
+          echo "Time=$(date +"%Y.%m.%d")" >> $GITHUB_ENV
 
-        # 解压数据库
-        for i in "GeoLite*"; do
-          tar -xvf $i
-        done
+  - name: Remove old Releases
+    uses: dev-drprasad/delete-older-releases@v0.2.0
+    with:
+      keep_latest: 0
+      delete_tags: true
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-        # 删除数据库文件
-        rm *.tar.gz
-
-        # 移动数据库文件到指定文件夹
-        mkdir -p database
-        mv GeoLite*/*.mmdb database
-
-        # 时间戳
-        echo "Time=$(date +"%Y.%m.%d")" >> $GITHUB_ENV
-
-    - name: Remove old Releases
-      uses: dev-drprasad/delete-older-releases@v0.2.0
-      with:
-        keep_latest: 0
-        delete_tags: true
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Release
-      uses: ncipollo/release-action@v1
-      with:
-        artifacts: "database/*"
-        tag: ${{ env.Time }}
-        token: ${{ secrets.GITHUB_TOKEN }}
+  - name: Release
+    uses: ncipollo/release-action@v1
+    with:
+      artifacts: "database/*"
+      tag: ${{ env.Time }}
+      token: ${{ secrets.GITHUB_TOKEN }}
