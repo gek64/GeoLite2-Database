@@ -17,7 +17,7 @@ jobs:
         curl -LOJ "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City&license_key=${{ secrets.LICENSE_KEY }}&suffix=tar.gz"
         curl -LOJ "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-Country&license_key=${{ secrets.LICENSE_KEY }}&suffix=tar.gz"
 
-        tar zxv *.tar.gz
+        tar -xzf *.tar.gz
 
         mkdir -p database
         mv GeoLite*/*.mmdb database
