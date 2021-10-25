@@ -21,13 +21,11 @@ jobs:
           for i in *.tar.gz; do
             tar -xvf "$i"
           done
-          # 删除数据库文件
-          rm *.tar.gz
           # 移动数据库文件到指定文件夹
           mkdir -p database
           mv GeoLite*/*.mmdb database
           # 时间戳
-          echo "Time=$(date +"%Y.%m.%d")" >> $GITHUB_ENV
+          echo "VERSION=$(echo GeoLite2-City_*.tar.gz | grep -Eo "[+-]?[0-9]+[0-9]+")" >> $GITHUB_ENV
 
       - name: Remove old Releases
         uses: dev-drprasad/delete-older-releases@v0.2.0
@@ -41,5 +39,5 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           artifacts: "database/*"
-          tag: ${{ env.Time }}
+          tag: ${{ env.VERSION }}
           token: ${{ secrets.GITHUB_TOKEN }}
