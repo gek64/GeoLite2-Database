@@ -38,7 +38,8 @@ jobs:
             tar -xvf "$i"
           done
           # 移动数据库文件到指定文件夹
-          mv *.tar.gz GeoLite*/*.mmdb database
+          mv GeoLite*/*.mmdb database
+          cp *.tar.gz database
           
           # 下载IP数据库(csv)
           curl -LOJ "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-ASN-CSV&license_key=${{ secrets.LICENSE_KEY }}&suffix=zip"
