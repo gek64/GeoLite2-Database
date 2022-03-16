@@ -26,6 +26,9 @@ jobs:
     steps:
       - name: Download GeoLite Database
         run: |
+          # 文件存放位置
+          mkdir -p database
+          
           # 下载IP数据库(mmdb)
           curl -LOJ "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-ASN&license_key=${{ secrets.LICENSE_KEY }}&suffix=tar.gz"
           curl -LOJ "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City&license_key=${{ secrets.LICENSE_KEY }}&suffix=tar.gz"
@@ -35,8 +38,7 @@ jobs:
             tar -xvf "$i"
           done
           # 移动数据库文件到指定文件夹
-          mkdir -p database
-          mv GeoLite*/*.mmdb database
+          mv *.tar.gz GeoLite*/*.mmdb database
           
           # 下载IP数据库(csv)
           curl -LOJ "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-ASN-CSV&license_key=${{ secrets.LICENSE_KEY }}&suffix=zip"
