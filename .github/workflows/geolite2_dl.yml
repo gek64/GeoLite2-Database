@@ -26,7 +26,7 @@ jobs:
     steps:
       - name: Download GeoLite Database
         run: |
-          # 下载IP数据库
+          # 下载IP数据库(mmdb)
           curl -LOJ "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-ASN&license_key=${{ secrets.LICENSE_KEY }}&suffix=tar.gz"
           curl -LOJ "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City&license_key=${{ secrets.LICENSE_KEY }}&suffix=tar.gz"
           curl -LOJ "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-Country&license_key=${{ secrets.LICENSE_KEY }}&suffix=tar.gz"
@@ -37,6 +37,14 @@ jobs:
           # 移动数据库文件到指定文件夹
           mkdir -p database
           mv GeoLite*/*.mmdb database
+          
+          # 下载IP数据库(csv)
+          curl -LOJ "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-ASN-CSV&license_key=${{ secrets.LICENSE_KEY }}&suffix=zip"
+          curl -LOJ "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City-CSV&license_key=${{ secrets.LICENSE_KEY }}&suffix=zip"
+          curl -LOJ "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-Country-CSV&license_key=${{ secrets.LICENSE_KEY }}&suffix=zip"
+          # 移动数据库文件到指定文件夹
+          mv *.zip database
+          
           # 时间戳
           echo "VERSION=$(echo GeoLite2-City_*.tar.gz | grep -Eo "[+-]?[0-9]+[0-9]+")" >> $GITHUB_ENV
 
