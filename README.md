@@ -1,2 +1,2 @@
-# GeoLite2-Database
-- Update every 7 days
+# geolite2 + geo2dnsmasq
+- update every 7 days
